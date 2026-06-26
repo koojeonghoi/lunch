@@ -22,7 +22,7 @@ SALAD_STORES = {
         ]
     },
     "슬로우캘리 마곡나루점": {
-        "order_url": "https://baemin.me/슬로우캘리마곡나루_실제링크",
+        "order_url": "https://s.baemin.com/Wf000fHwF49jZ==",
         "items": [
             {"menu": "클래식 연어 포케", "price": 12500, "type": "포케(현미밥)", "desc": "🐟 슬로우캘리 원탑 메뉴! 현미밥 베이스라 포만감이 아주 오래 갑니다.", "weight": 3},
             {"menu": "블랙페퍼 치킨 포케", "price": 11500, "type": "포케(현미밥)", "desc": "🍗 달콤 짭조름한 아일랜드풍 닭다리살 and 현미밥. 배가 전혀 안 고픕니다.", "weight": 4},
@@ -30,7 +30,7 @@ SALAD_STORES = {
         ]
     },
     "프레퍼스 다이어트 푸드 마곡나루점": {
-        "order_url": "https://baemin.me/프레퍼스마곡나루_실제링크",
+        "order_url": "https://s.baemin.com/Ph000CK6Yfj5D=",
         "items": [
             {"menu": "비프 와사비 덮밥", "price": 13900, "type": "보울(흑미밥+소고기)", "desc": "🥩 부드러운 소고기 수비드와 흑미밥의 조화. 사실상 샐러드 탈을 쓴 고기 덮밥이라 배고플 틈이 없습니다.", "weight": 5},
             {"menu": "포크 명란 파스타", "price": 9900, "type": "샐러드 파스타", "desc": "🍝 돼지 안심 수비드 고기와 샐러드 파스타면! 면 종류라 오후 5시가 되어도 끄떡없습니다.", "weight": 4},
@@ -38,7 +38,7 @@ SALAD_STORES = {
         ]
     },
     "포케올데이 마곡나루점": {
-        "order_url": "https://baemin.me/포케올데이마곡나루_실제링크",
+        "order_url": "https://s.baemin.com/rZ000ftiT306j",
         "items": [
             {"menu": "현미밥 포케 (오리훈제 토핑)", "price": 11900, "type": "포케(현미밥)", "desc": "🦆 오리훈제 기름과 현미밥의 만남. 은근히 기름지고 배가 쉽게 꺼지지 않습니다.", "weight": 4},
             {"menu": "메밀면 포케 (육회 토핑)", "price": 12900, "type": "포케(메밀면)", "desc": "🍜 야채와 고소한 육회, 메밀면의 조합! 별미이면서 은근히 든든한 양을 자랑합니다.", "weight": 3}
