@@ -14,7 +14,7 @@ TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 # =========================================================================
 SALAD_STORES = {
     "샐러디 마곡나루역점": {
-        "order_url": "https://baemin.me/마곡나루역점_실제링크", 
+        "order_url": "https://s.baemin.com/3N000lEqy5xc3", 
         "items": [
             {"menu": "칠리베이컨 웜볼", "price": 8900, "type": "웜볼(곡물밥)", "desc": "🥓 베이컨+곡물밥 조합으로 마곡나루 직장인 가성비&포만감 최강 메뉴.", "weight": 4},
             {"menu": "우삼겹 웜볼", "price": 8700, "type": "웜볼(곡물밥)", "desc": "🥩 단짠 우삼겹과 견과류, 곡물밥이 들어가 오후 내내 에너지가 유지됩니다.", "weight": 4},
