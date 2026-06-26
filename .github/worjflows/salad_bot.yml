@@ -1,1 +1,29 @@
+name: 평일 점심 샐러드 추천 봇
+
+on:
+  schedule:
+    # UTC 기준 시간 설정 (한국 시간 오전 11시는 UTC 기준 오전 2시입니다)
+    # 월~금(Monday-Friday) 오전 11시에 실행하라는 뜻입니다.
+    - cron: '0 2 * * 1-5'
+  workflow_dispatch: # 깃허브 웹사이트에서 수동으로 버튼 눌러 테스트하고 싶을 때 사용하는 옵션
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 깃허브 코드 가져오기
+      uses: actions/checkout@v4
+
+    - name: 파이썬 설치하기
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: 필요한 도구 자동 설치하기
+      run: |
+        pip install requests python-dotenv
+
+    - name: 샐러드 봇 실행하기
+      run: python main.py
 
