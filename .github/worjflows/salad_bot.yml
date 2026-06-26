@@ -2,10 +2,10 @@ name: 평일 점심 샐러드 추천 봇
 
 on:
   schedule:
-    # UTC 기준 시간 설정 (한국 시간 오전 11시는 UTC 기준 오전 2시입니다)
-    # 월~금(Monday-Friday) 오전 11시에 실행하라는 뜻입니다.
+    # UTC 기준 시간 (한국 시간 오전 11시는 UTC 기준 오전 2시입니다)
+    # 월~금요일 오전 11시에 실행됩니다.
     - cron: '0 2 * * 1-5'
-  workflow_dispatch: # 깃허브 웹사이트에서 수동으로 버튼 눌러 테스트하고 싶을 때 사용하는 옵션
+  workflow_dispatch: # 깃허브 웹에서 수동으로 실행 버튼을 만들기 위한 옵션
 
 jobs:
   run-bot:
@@ -22,8 +22,13 @@ jobs:
 
     - name: 필요한 도구 자동 설치하기
       run: |
-        pip install requests python-dotenv
+        pip install requests
 
+    # =========================================================================
+    # [수정된 부분] 깃허브 Secrets에 저장된 값을 파이썬이 읽을 수 있게 환경변수로 주입합니다.
+    # =========================================================================
     - name: 샐러드 봇 실행하기
+      env:
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: python main.py
-
