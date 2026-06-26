@@ -22,7 +22,7 @@ jobs:
 
     - name: 필요한 도구 자동 설치하기
       run: |
-        pip install requests
+        pip install requests beautifulsoup4
 
     # =========================================================================
     # [수정된 부분] 깃허브 Secrets에 저장된 값을 파이썬이 읽을 수 있게 환경변수로 주입합니다.
