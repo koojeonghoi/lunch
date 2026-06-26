@@ -1,138 +1,65 @@
 import os
 import random
-import requests
-from bs4 import BeautifulSoup
+import telebot  # 👈 실시간 대화를 위한 라이브러리 추가 필요 (pip install pyTelegramBotAPI)
 from datetime import datetime
 
+# 내 토큰 입력
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 
-# =========================================================================
-# [마곡나루역 진짜 배민 실시간 매장 주소]
-# 앱스토어로 튕기지 않는 배민 표준 웹 매장 ID 번호입니다.
-# =========================================================================
-SALAD_STORES = {
-    "샐러디 마곡나루역점": {
-        "shop_id": "13612543", # 실제 배민 매장 고유 ID (예시)
-        "order_url": "https://m.baemin.com/shop/13612543" # 👈 웹/앱 어디서나 바로 열리는 절대 주소
+# 마곡나루 매장별 실제 사용자가 선호하는 맞춤형 '최애 메뉴 리스트' 매핑
+MY_FAVORITE_POOLS = {
+    "샐러디": {
+        "shop_url": "https://m.baemin.com/shop/13612543",
+        "menus": [
+            {"name": "칠리베이컨 웜볼", "price": 8900, "tip": "🥓 아는 맛이 무섭다! 곡물밥 가득이라 퇴근 때까지 배부름 보장."},
+            {"name": "우삼겹 웜볼", "price": 8700, "tip": "🥩 단짠 우삼겹 토핑 조합. 단백질과 탄수화물 밸런스 최고."}
+        ]
     },
-    "슬로우캘리 마곡나루점": {
-        "shop_id": "14210985",
-        "order_url": "https://m.baemin.com/shop/14210985"
+    "슬로우캘리": {
+        "shop_url": "https://m.baemin.com/shop/14210985",
+        "menus": [
+            {"name": "클래식 연어 포케", "price": 12500, "tip": "🐟 현미밥 베이스에 스파이시 마요 소스 추가하면 물리지 않고 든든해요."},
+            {"name": "부채살 스테이크 포케", "price": 13500, "tip": "🥩 역시 고기가 들어가야 배가 안 꺼집니다. 굽기 상태 최고."}
+        ]
     },
-    "프레퍼스 다이어트 푸드 마곡나루점": {
-        "shop_id": "12554789",
-        "order_url": "https://m.baemin.com/shop/12554789"
+    "프레퍼스": {
+        "shop_url": "https://m.baemin.com/shop/12554789",
+        "menus": [
+            {"name": "비프 와사비 덮밥", "price": 13900, "tip": "🥩 수비드 소고기가 가득 올라간 사실상의 든든한 고기 덮밥 식단!"},
+            {"name": "포크 명란 파스타", "price": 9900, "tip": "🍝 부드러운 안심과 샐러드 파스타면의 조합이라 포만감이 매우 오래 갑니다."}
+        ]
     }
 }
 
-def get_baemin_realtime_menu(store_name, shop_id):
-    """ 배민 웹 서버에 다이렉트로 접속하여 모바일 위장 후 실시간 메뉴판을 가져옵니다 """
-    menu_items = []
+# 텔레그램 메시지가 들어오면 실행되는 로직
+@bot.message_handler(func=lambda message: True)
+def respond_menu_recommendation(message):
+    user_text = message.text.strip()
     
-    # 배민의 차단을 막기 위해 실제 최신 스마트폰 브라우저인 것처럼 위장합니다 (핵심)
-    url = f"https://m.baemin.com/shop/{shop_id}/menu/list"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1",
-        "Accept-Language": "ko-KR,ko;q=0.9"
-    }
-    
-    try:
-        response = requests.get(url, headers=headers, timeout=12)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
+    # 입력한 글자에 매장 이름이 포함되어 있는지 확인
+    matched_store = None
+    for store_name in MY_FAVORITE_POOLS.keys():
+        if store_name in user_text:
+            matched_store = store_name
+            break
             
-            # 배민 모바일 웹의 실제 메뉴 이름과 가격 태그 추출
-            # (배민 웹 소스 규칙: 메뉴명은 .menu-name / 가격은 .price 클래스 사용)
-            menus = soup.select(".menu-name, .shop-menu-title")
-            prices = soup.select(".price, .shop-menu-price")
-            
-            for menu, price in zip(menus, prices):
-                menu_name = menu.text.strip()
-                try:
-                    menu_price = int(''.join(filter(str.isdigit, price.text)))
-                except:
-                    continue
-                
-                # 든든함 자동 판별 로직
-                weight = 1
-                desc = "🥗 가벼운 야채 중심 식단입니다. 토핑 추가를 고려해보세요!"
-                if any(word in menu_name for word in ["웜볼", "포케", "밥", "비프", "스테이크", "파스타", "삼겹"]):
-                    weight = 5
-                    desc = "🥩 곡물밥이나 고기가 포함되어 오후 내내 든든함이 유지되는 추천 메뉴입니다."
-                
-                menu_items.append({
-                    "menu": menu_name,
-                    "price": menu_price,
-                    "weight": weight,
-                    "desc": desc
-                })
-    except Exception as e:
-        print(f"[{store_name}] 배민 실시간 동기화 실패: {e}")
+    if matched_store:
+        store_info = MY_FAVORITE_POOLS[matched_store]
+        # 해당 매장의 최애 메뉴 풀에서 하나를 무작위 추천
+        selected_menu = random.choice(store_info["menus"])
         
-    return menu_items
-
-def pick_today_lunch():
-    budget_limit = 15000
-    candidates = []
-    weights = []
-    
-    for store_name, store_info in SALAD_STORES.items():
-        # 가짜 예시가 아니라 진짜 실시간 배민 데이터를 매번 요청합니다.
-        realtime_items = get_baemin_realtime_menu(store_name, store_info["shop_id"])
-        
-        # 크롤링 보안 우회 실패 시 작동할 최소한의 실배정 메뉴 리포지토리
-        if not realtime_items:
-            realtime_items = [
-                {"menu": "우삼겹 웜볼 / 연어 포케 등 매장 대표 메뉴", "price": 11500, "weight": 4, "desc": "실시간 메뉴판 로딩 지연으로 매장 시그니처 메뉴를 우선 제안합니다."}
-            ]
-            
-        for item in realtime_items:
-            if item['price'] <= budget_limit:
-                candidates.append({
-                    "store": store_name,
-                    "menu": item['menu'],
-                    "price": item['price'],
-                    "desc": item['desc'],
-                    "url": store_info["order_url"],
-                    "weight": item['weight']
-                })
-                weights.append(item['weight'])
-                
-    if not candidates:
-        return None
-
-    return random.choices(candidates, weights=weights, k=1)[0]
-
-def send_telegram_notification(lunch_info):
-    if not lunch_info:
-        return
-
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    
-    # 🔗 주소 부분을 튕기지 않는 절대 웹 링크 구조로 완전히 개편했습니다.
-    message = (
-        f"📍 <b>[마곡나루역] 배민 실시간 연동 점심 추천</b> 🥗\n\n"
-        f"🏪 <b>매장명:</b> {lunch_info['store']}\n"
-        f"🍽️ <b>메뉴명:</b> {lunch_info['menu']}\n"
-        f"💵 <b>가 격:</b> {lunch_info['price']:,}원 (배민 실시간 정보)\n\n"
-        f"💡 <b>포만감 검증 결과:</b>\n{lunch_info['desc']}\n\n"
-        f"🔗 <a href='{lunch_info['url']}'>👉 [여기]를 누르면 배민 매장으로 직행합니다</a>\n\n"
-        f"🕒 <i>동기화: {datetime.now().strftime('%Y-%m-%d %H:%M')}</i>"
-    )
-    
-    payload = {
-        "chat_id": TELEGRAM_CHAT_ID,
-        "text": message,
-        "parse_mode": "HTML",
-        "disable_web_page_preview": True
-    }
-    
-    try:
-        requests.post(url, json=payload)
-    except Exception as e:
-        print(f"에러 발생: {e}")
+        response_msg = (
+            f"🎯 <b>마곡나루 [{matched_store}] 취향 저격 추천</b>\n\n"
+            f"🍽️ <b>추천 메뉴:</b> {selected_menu['name']}\n"
+            f"💵 <b>가 격:</b> {selected_menu['price']:,}원\n\n"
+            f"💡 <b>오늘의 포만감 가이드:</b>\n{selected_menu['tip']}\n\n"
+            f"🔗 <a href='{store_info['shop_url']}'>👉 [여기]를 눌러 배민 주문 페이지로 이동</a>"
+        )
+        bot.reply_to(message, response_msg, parse_mode="HTML", disable_web_page_preview=True)
+    else:
+        bot.reply_to(message, "❓ '샐러디', '슬로우캘리', '프레퍼스' 중 알고 싶은 마곡나루 매장명을 정확히 입력해주세요!")
 
 if __name__ == "__main__":
-    lunch_info = pick_today_lunch()
-    send_telegram_notification(lunch_info)
+    print("🤖 마곡나루 맞춤형 대화 봇이 실시간 구동 중입니다...")
+    bot.infinity_polling() # 봇이 꺼지지 않고 메시지를 계속 기다리게 만듦
