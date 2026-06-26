@@ -8,38 +8,46 @@ TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
 # =========================================================================
-# [데이터베이스 업데이트] 
-# 각 매장의 배민/쿠팡이츠 주문 링크(order_url)와 메뉴별 '든든함 정도(weight)' 추가
-# weight가 3인 메뉴는 1인 메뉴보다 추천될 확률이 3배 높습니다. (포만감 가중치)
+# [마곡나루역 초근접 매장 데이터베이스 - 잇샐러드 제외] 
+# ⚠️ 각 매장의 "order_url"에는 실제 스마트폰 배민 앱에서 '마곡나루점'을 검색해
+# '공유하기'로 복사한 주소를 넣어주시면 한 번에 앱으로 연결됩니다!
 # =========================================================================
 SALAD_STORES = {
-    "샐러디 마곡나루점": {
-        "order_url": "https://baemin.me/example1", # 👈 여기에 실제 배민 매장 주소 넣기
+    "샐러디 마곡나루역점": {
+        "order_url": "https://baemin.me/마곡나루역점_실제링크", 
         "items": [
-            {"menu": "칠리베이컨 웜볼", "price": 8900, "type": "웜볼(곡물밥 포함)", "desc": "🥓 베이컨+곡물밥 조합으로 오후 내내 든든합니다!", "weight": 3},
-            {"menu": "우삼겹 웜볼", "price": 8700, "type": "웜볼(곡물밥 포함)", "desc": "🥩 우삼겹과 견과류, 곡물밥이 들어가 포만감이 오래 가요.", "weight": 3},
-            {"menu": "시저치킨 샐러디", "price": 6900, "type": "가벼운 샐러드", "desc": "🐔 닭가슴살 중심의 기본 샐러드. 깔끔하고 가볍습니다.", "weight": 1}
+            {"menu": "칠리베이컨 웜볼", "price": 8900, "type": "웜볼(곡물밥)", "desc": "🥓 베이컨+곡물밥 조합으로 마곡나루 직장인 가성비&포만감 최강 메뉴.", "weight": 4},
+            {"menu": "우삼겹 웜볼", "price": 8700, "type": "웜볼(곡물밥)", "desc": "🥩 단짠 우삼겹과 견과류, 곡물밥이 들어가 오후 내내 에너지가 유지됩니다.", "weight": 4},
+            {"menu": "탄단지 샐러디", "price": 8300, "type": "일반 샐러드", "desc": "🐔 치킨, 감자매쉬가 들어가 균형 잡힌 기본 식단. 무난하게 든든합니다.", "weight": 2}
         ]
     },
-    "슬로우가든": {
-        "order_url": "https://baemin.me/example2",
+    "슬로우캘리 마곡나루점": {
+        "order_url": "https://baemin.me/슬로우캘리마곡나루_실제링크",
         "items": [
-            {"menu": "프리메이플 베이컨 샐러드", "price": 12500, "type": "든든한 샐러드", "desc": "🍳 두툼한 베이컨과 계란이 들어가 배가 쉽게 꺼지지 않아요.", "weight": 3},
-            {"menu": "수비드 닭가슴살 샐러드", "price": 11500, "type": "가벼운 샐러드", "desc": "🥑 부드러운 닭가슴살 위주의 정석 다이어트 식단!", "weight": 1}
+            {"menu": "클래식 연어 포케", "price": 12500, "type": "포케(현미밥)", "desc": "🐟 슬로우캘리 원탑 메뉴! 현미밥 베이스라 포만감이 아주 오래 갑니다.", "weight": 3},
+            {"menu": "블랙페퍼 치킨 포케", "price": 11500, "type": "포케(현미밥)", "desc": "🍗 달콤 짭조름한 아일랜드풍 닭다리살 and 현미밥. 배가 전혀 안 고픕니다.", "weight": 4},
+            {"menu": "부채살 스테이크 포케", "price": 13500, "type": "포케(현미밥)", "desc": "🥩 수비드한 소고기 부채살이 올라가 고기 씹는 맛과 든든함을 보장합니다.", "weight": 4}
         ]
     },
-    "잇샐러드": {
-        "order_url": "https://baemin.me/example3",
+    "프레퍼스 다이어트 푸드 마곡나루점": {
+        "order_url": "https://baemin.me/프레퍼스마곡나루_실제링크",
         "items": [
-            {"menu": "스트레스 릴리즈", "price": 13400, "type": "찹샐러드(헤비)", "desc": "🧀 돼지고기, 나초, 치즈가 들어가 샐러드계의 국밥 수준 포만감!", "weight": 4},
-            {"menu": "에너자이저", "price": 13900, "type": "찹샐러드(미디움)", "desc": "🐓 닭가슴살과 블랙올리브 등으로 적당한 포만감을 줍니다.", "weight": 2},
-            {"menu": "시그니처 로맨틱 시트러스", "price": 12900, "type": "가벼운 샐러드", "desc": "🍊 과일 중심의 상큼한 구성. 조금 배고플 수 있어요.", "weight": 1}
+            {"menu": "비프 와사비 덮밥", "price": 13900, "type": "보울(흑미밥+소고기)", "desc": "🥩 부드러운 소고기 수비드와 흑미밥의 조화. 사실상 샐러드 탈을 쓴 고기 덮밥이라 배고플 틈이 없습니다.", "weight": 5},
+            {"menu": "포크 명란 파스타", "price": 9900, "type": "샐러드 파스타", "desc": "🍝 돼지 안심 수비드 고기와 샐러드 파스타면! 면 종류라 오후 5시가 되어도 끄떡없습니다.", "weight": 4},
+            {"menu": "치킨 데리야끼 덮밥", "price": 8900, "type": "보울(흑미밥+닭)", "desc": "🐔 가성비와 포만감 동시 만족! 부드러운 닭가슴살에 짭짤한 소스가 맛있습니다.", "weight": 4}
+        ]
+    },
+    "포케올데이 마곡나루점": {
+        "order_url": "https://baemin.me/포케올데이마곡나루_실제링크",
+        "items": [
+            {"menu": "현미밥 포케 (오리훈제 토핑)", "price": 11900, "type": "포케(현미밥)", "desc": "🦆 오리훈제 기름과 현미밥의 만남. 은근히 기름지고 배가 쉽게 꺼지지 않습니다.", "weight": 4},
+            {"menu": "메밀면 포케 (육회 토핑)", "price": 12900, "type": "포케(메밀면)", "desc": "🍜 야채와 고소한 육회, 메밀면의 조합! 별미이면서 은근히 든든한 양을 자랑합니다.", "weight": 3}
         ]
     }
 }
 
 def pick_today_lunch():
-    budget_limit = 14000  # 물가 감안 예산 상한선 살짝 상향
+    budget_limit = 15000  
     candidates = []
     weights = []
     
@@ -54,15 +62,13 @@ def pick_today_lunch():
                     "desc": item['desc'],
                     "url": store_info["order_url"]
                 })
-                # 가중치를 리스트에 추가 (weight가 높을수록 당첨 확률 상승)
                 weights.append(item['weight'])
                 
     if not candidates:
         return None
 
-    # 가중치(포만감 점수)를 반영하여 랜덤 추출
-    selected = random.choices(candidates, weights=weights, k=1)[0]
-    return selected
+    # 포만감 가중치(weight)를 반영하여 높은 확률로 든든한 메뉴 선정
+    return random.choices(candidates, weights=weights, k=1)[0]
 
 def send_telegram_notification(lunch_info):
     if not lunch_info:
@@ -71,23 +77,22 @@ def send_telegram_notification(lunch_info):
 
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     
-    # 메시지에 설명(desc)과 주문 링크(url)를 이쁘게 포함시켰습니다.
     message = (
-        f"🥗 <b>오늘의 점심 샐러드 추천</b> 🥗\n\n"
+        f"📍 <b>[마곡나루역] 오늘의 점심 샐러드 추천</b> 🥗\n\n"
         f"🏪 <b>매장명:</b> {lunch_info['store']}\n"
         f"🍽️ <b>메뉴명:</b> {lunch_info['menu']} ({lunch_info['type']})\n"
         f"💵 <b>가 격:</b> {lunch_info['price']:,}원\n\n"
-        f"💡 <b>포만감 팁:</b>\n{lunch_info['desc']}\n\n"
+        f"💡 <b>마곡나루 직장인을 위한 포만감 팁:</b>\n{lunch_info['desc']}\n\n"
         f"🔗 <a href='{lunch_info['url']}'>👉 [여기]를 눌러 배민으로 주문하기</a>\n\n"
         f"🕒 <i>선정 시간: {datetime.now().strftime('%Y-%m-%d %H:%M')}</i>\n"
-        f"🤖 <i>오후에 배고프지 않게 설계된 샐러드 봇</i>"
+        f"🤖 <i>마곡나루역 전용 스마트 샐러드 배고픔 방지 봇</i>"
     )
     
     payload = {
         "chat_id": TELEGRAM_CHAT_ID,
         "text": message,
         "parse_mode": "HTML",
-        "disable_web_page_preview": True # 배민 링크 미리보기창이 길게 뜨는 것을 방지
+        "disable_web_page_preview": True
     }
     
     try:
@@ -100,6 +105,6 @@ def send_telegram_notification(lunch_info):
         print(f"에러 발생: {e}")
 
 if __name__ == "__main__":
-    print("스마트 점심 메뉴 추천 프로세스를 구동합니다...")
+    print("마곡나루역 점심 메뉴 추천 프로세스를 구동합니다...")
     lunch_info = pick_today_lunch()
     send_telegram_notification(lunch_info)
