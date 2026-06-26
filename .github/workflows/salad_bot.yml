@@ -1,10 +1,12 @@
-name: 평일 점심 샐러드 추천 봇
+name: 마곡나루 매장 맞춤 추천 봇
 
 on:
-  schedule:
-    # 한국 시간 평일(월~금) 오전 11시 자동 구동 (UTC 기준 오전 2시)
-    - cron: '0 2 * * 1-5'
-  workflow_dispatch: # 수동 실행용 버튼 활성화
+  workflow_dispatch:
+    inputs:
+      user_message:
+        description: '알고 싶은 마곡나루 매장명을 입력하세요 (예: 샐러디 추천해줘)'
+        required: true
+        default: '샐러디'
 
 jobs:
   run-bot:
@@ -19,15 +21,12 @@ jobs:
       with:
         python-version: '3.10'
 
-    # =========================================================================
-    # [수정된 부분] 실시간 메뉴 분석을 위한 크롤링 도구(beautifulsoup4) 패키지를 추가로 설치합니다.
-    # =========================================================================
-    - name: 크롤링 필수 도구 자동 설치하기
-      run: |
-        pip install requests beautifulsoup4
+    - name: 필수 도구 자동 설치
+      run: pip install requests
 
     - name: 샐러드 봇 실행하기
       env:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        USER_MESSAGE: ${{ github.event.inputs.user_message }} # 👈 내가 입력한 글자를 파이썬으로 토스
       run: python salad_bot.py
